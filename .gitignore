@@ -45,3 +45,23 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+#ignore all file for NX
+*.f06
+*.f04
+*.log
+*.MASTER
+*.xdb
+*.DBALL
+*.bdf
+*.dat
+*.fem
+*.sim
+
+#ignore other file 
+*.rar
+
+.gitignore
+
+*.txt
+*.asv
