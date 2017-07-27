@@ -26,7 +26,7 @@ for i = 1:n
     str = fgets(f);
     str1 = str(60:80);
     freq(i) = sscanf(str1,'%e',1);  % считывание собственных частот, √ц
-    fprintf(1, 'freq (%d) = %f Hz\n', i, freq(i));
+%     fprintf(1, 'freq (%d) = %f Hz\n', i, freq(i));
 end;
 dlmwrite('Freq_reckon.txt', freq, '\n');
 %---------------------------------------------------------------------------
