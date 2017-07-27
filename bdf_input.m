@@ -94,22 +94,18 @@ end
 function num = cbush_property_read (str)
 % Функция считывания записи CBUSH
     if strfind(str, ',')
-        fprintf(1, '\cbush_property_read с запятыми\n');
+%         fprintf(1, '\ncbush_property_read с запятыми\n');
         [st, str] = strtok(str, ',');
         [st, str] = strtok(str, ',');
-        fprintf(1, 'st = %s ', st);
         n1 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
-        fprintf(1, 'st = %s ', st);
         n2 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
-        fprintf(1, 'st = %s ', st);
         n3 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
-        fprintf(1, 'st = %s ', st);
-        n4 = sscanf(st,'%d');
+                n4 = sscanf(st,'%d');
     else
-        fprintf(1, '\cbush_property_read без запятых\n');
+%         fprintf(1, '\cbush_property_read без запятых\n');
         n1 = sscanf(str(9:16) ,'%d');
         n2 = sscanf(str(17:24),'%d');
         n3 = sscanf(str(25:32),'%d');
@@ -132,7 +128,7 @@ function res = pbush_property_read (str)
     c = zeros(1,6);
 
     if strfind(str, ',')
-        fprintf(1, '\npbush_property_read с запятыми\n');
+%         fprintf(1, '\npbush_property_read с запятыми\n');
         [st, str] = strtok(str, ',');
         [st, str] = strtok(str, ',');
         n = sscanf(st,'%d');
@@ -142,10 +138,10 @@ function res = pbush_property_read (str)
            % if isempty(st), break; end;
            st = prepare_str_e(st);
            c(i) = sscanf(st, '%e');
-           fprintf(1, 'c(%d) = %e\n', i, c(i));
+%            fprintf(1, 'c(%d) = %e\n', i, c(i));
         end;
     else
-        fprintf(1, '\npbush_property_read без запятых\n');
+%         fprintf(1, '\npbush_property_read без запятых\n');
         n = sscanf(str(9:16),'%d');
         for i = 1:6
             str1 = str(17+8*i:24+8*i);
