@@ -47,16 +47,22 @@ Temporary Items
 .apdisk
 
 #ignore all file for NX
-*.f06
-*.f04
-*.log
-*.MASTER
-*.xdb
-*.DBALL
-*.bdf
-*.dat
-*.fem
-*.sim
+*.f06*
+*.plt*
+*.op2*
+*.plt.*
+*.pch*
+*.asg*
+*.f04*
+*.log*
+*.MASTER*
+*.xdb*
+*.DBALL*
+*.bdf*
+*.dat*
+*.fem*
+*.sim*
+*.asm*
 
 #ignore other file 
 *.rar

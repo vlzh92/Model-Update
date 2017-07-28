@@ -2,7 +2,7 @@ function start_nastran(out_file)
     nastran = '"C:\Program Files\Siemens\NX 8.5\NXNASTRAN\bin\nastran64Lw.exe"';
     is_it_start = 'tasklist | findstr /i nastran.exe';
 
-    nastran = [nastran ' ' out_file ' parallel=4'];
+    nastran = [nastran ' ' out_file ' parallel=4' ' out=' out_file(1:end-4)];
     fprintf(1, 'Start NX Solver\n%s\n', nastran);
     [status, cmdout] = system(nastran,'-echo');
     fprintf(1,'NX starting with status = %d (%s)\n', status, cmdout);

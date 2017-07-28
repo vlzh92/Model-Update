@@ -1,6 +1,6 @@
-function res = f06_read(name, num)
-fprintf('f06_read\n');
+function res = f06_read(name, num, freq_rek_file)
 fprintf('---------START---------\n');
+fprintf('f06_read\n');
 % Функция считывания f06
 f = fopen(name,'r');
 nel = length(num); % количество элементов CBUSH
@@ -28,7 +28,7 @@ for i = 1:n
     freq(i) = sscanf(str1,'%e',1);  % считывание собственных частот, Гц
 %     fprintf(1, 'freq (%d) = %f Hz\n', i, freq(i));
 end;
-dlmwrite('Freq_reckon.txt', freq, '\n');
+dlmwrite(freq_rek_file, freq, '\n');
 %---------------------------------------------------------------------------
 fprintf('Finde E L E M E N T   S T R A I N   E N E R G I E S\n');
 while isempty(strfind(str, 'E L E M E N T   S T R A I N   E N E R G I E S')) && ~feof(f)
@@ -65,8 +65,8 @@ end;
 fclose(f);
 res = [energy energies']';
 
-fprintf('--------- END ---------\n');
 fprintf('f06_read\n');
+fprintf('--------- END ---------\n');
 end
 
 %---------------------------------------

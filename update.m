@@ -1,7 +1,7 @@
-function c = update(f_freq_t,f_freq_r, c, energy, kof)
+function c = update(f_freq_r, f_freq_t, c, energy, kof)
+    fprintf(1, '---------START--------\n');
     fprintf(1, 'update\n');
-    fprintf(1, '-------START------\n');
-    f = fopen('Freq_test.txt', 'r');
+    f = fopen(f_freq_t, 'r');
     str = ' ';
     count = 0;
     while ~feof(f)
@@ -17,7 +17,7 @@ function c = update(f_freq_t,f_freq_r, c, energy, kof)
     end;
     fclose(f);
 
-    f = fopen('Freq_reckon.txt', 'r');
+    f = fopen(f_freq_r, 'r');
     for i = 1:count
         str = fgets(f);
         freq_reckon(i) = sscanf(str,'%f');
@@ -25,10 +25,10 @@ function c = update(f_freq_t,f_freq_r, c, energy, kof)
     fclose(f);
     
     for i = 1:length(freq_reckon)
-        fprintf(1, '¹ %d) %f Hz -> %f Hz', freq_reckon(i), freq_test(i));
+        fprintf(1, '%d) %f Hz => %f Hz\n', i, freq_reckon(i), freq_test(i));
     end;
    
-    % 
+    c(c==0) = 1;
     % fprintf(1, 'length(res(:,1)) = %d\n', length(energy(2:end,1)));
     % fprintf(1, 'length(c) = %d\n', length(c));
     rest = energy';
@@ -49,22 +49,23 @@ function c = update(f_freq_t,f_freq_r, c, energy, kof)
     alpha = alpha(1:end,1:count);
     % size(alpha)
     % 
-    dlmwrite('temp/Matrix_1.txt', alpha, '\t');
-    dlmwrite('temp/Matrix_2.txt', pinv(alpha), '\t');
+    dlmwrite([f_freq_t '.Matrix_1.txt'] , alpha, '\t');
+    dlmwrite([f_freq_t '.Matrix_2.txt'], pinv(alpha), '\t');
     % 
-    fprintf('c(1)\n');
-    size(c(1:end, 1))
-    fprintf('pinv(alpha)\n');
-    size(pinv(alpha'))
-    fprintf('pinv(alpha) * (freq_test - freq_reckon)\n');
-    size(pinv(alpha') * (freq_test - freq_reckon))
+%     fprintf('c(1)\n');
+%     size(c(1:end, 1))
+%     fprintf('pinv(alpha)\n');
+%     size(pinv(alpha'))
+%     fprintf('pinv(alpha) * (freq_test - freq_reckon)\n');
+%     size(pinv(alpha') * (freq_test - freq_reckon))
+   
     for i = 1:length(c(1,1:end))
         c(1:end,i) = c(1:end,i) + pinv(alpha') * (freq_reckon - freq_test) * kof;
-        dlmwrite('temp/temp.txt', kof *(pinv(alpha') * (freq_reckon - freq_test))','-append');
+        dlmwrite([f_freq_t '.Delta.txt'], pinv(alpha') * (freq_reckon - freq_test) * kof ,'-append');
     end; 
     % 
     c(c<1) = 0;
-    fprintf(1, '--------END-------\n');
     fprintf(1, 'update\n');
+    fprintf(1, '----------END---------\n');
 end
 

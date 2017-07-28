@@ -1,6 +1,6 @@
 function bdf_write(name, num, c, nmax)
-fprintf('bdf_write\n');
 fprintf('---------START---------\n');
+fprintf('bdf_write\n');
 % Функция записи bdf
 fout = fopen(name,'w');
 fin =  fopen('template.bdf','r');
@@ -41,6 +41,6 @@ end;
 fprintf(fout,'ENDDATA\n');
 fclose(fout);
 
-fprintf('\n--------- END ---------\n');
-fprintf('bdf_write\n');
+fprintf('\nbdf_write\n');
+fprintf('--------- END ---------\n');
 end

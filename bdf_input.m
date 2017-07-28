@@ -1,6 +1,6 @@
 function res = bdf_input (name)
-fprintf('bdf_input\n');
 fprintf('---------START---------\n');
+fprintf('bdf_input\n');
 
 fin = fopen(name,'r');
 % Подсчёт количества записей PBUSH и CBUSH
@@ -85,8 +85,8 @@ end;
 %
 res = struct('nmax', nmax, 'num',cbush_num(:, [ 1 3 4]), 'c', cbush_c);
 
-fprintf('\n--------- END ---------\n');
-fprintf('bdf_input\n');
+fprintf('\nbdf_input\n');
+fprintf('--------- END ---------\n');
 end
 
 % =========================================================
