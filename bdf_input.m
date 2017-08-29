@@ -37,12 +37,17 @@ while ~feof(fin)
     end;
     if sum(i*ao==ar)
         fprintf(1, '|%.2f%', i/maxl*100);
+        if i/maxl*100 > 95
+            fprintf(1, '\n');
+        end;
     end;
     i = i + 1;
 end;
-fprintf('\nend count CBUSH PBUSH\n');
+fprintf('end count CBUSH PBUSH\n');
 fprintf('CBUSH = %d PBUSH = %d\n', n_c, n_p);
 %
+% n_p = n_p + 5;
+% n_c = n_c + 5;
 pbush_num = zeros(n_p,1); % массив идентификационных номеров свойств PBUSH
 pbush_c   = zeros(n_p,6); % массив жесткостей PBUSH
 cbush_num = zeros(n_c,4); % массив номеров CBUSH, включая собственный номер, ссылку на PBUSH, номера 2 узлов
@@ -55,17 +60,23 @@ i = 0;
 while ~feof(fin)
     if sum(i*ao==ar)
         fprintf(1, '|%.2f%', i/maxl*100);
+        if i/maxl*100 > 95
+            fprintf(1, '\n');
+        end;
     end;
     i = i + 1;
     str = fgets(fin);
-    if strfind(str, 'PBUSH') 
-        % fprintf(fout,'%s',str);
+   
+    if strfind(str, 'PBUSH') & isempty(strfind(str, '$*'))
+        fprintf(1,'\nPBUSH: %s',str);
         ip = ip+1;
         res = pbush_property_read(str);     % считывание записи PBUSH
-        pbush_num(ip) = res(1); pbush_c(ip,:) = res(2:7);
+        pbush_num(ip) = res(1);
+%         fprintf(1, '%d) %f %f %f %f %f %f', ip, res(2:7));
+        pbush_c(ip,:) = res(2:7);
     else
-        if strfind(str, 'CBUSH') 
-            % fprintf(fout,'%s',str);
+        if strfind(str, 'CBUSH') & isempty(strfind(str, '$*'))
+            fprintf(1,'CBUSH: %s',str);
             ic = ic+1;
             [cbush_num(ic,:)] = cbush_property_read(str);   % считывание записи CBUSH
         else
@@ -80,6 +91,12 @@ fclose(fin); fclose(fout);
 % Присвоение жесткостей элементам CBUSH
 for i = 1:n_c
     ind = pbush_num - cbush_num(i,2) == 0;
+%     pbush_num
+%     cbush_num(i,2)
+    fprintf(1, 'i = %d n_c = %d\n', i, n_c);
+%     pbush_c(ind,:)
+%     size(cbush_c)
+%     size(pbush_c)
     cbush_c(i,:) = pbush_c(ind,:);
 end;
 %
