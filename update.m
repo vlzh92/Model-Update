@@ -1,7 +1,7 @@
 function c = update(f_freq_r, f_freq_t, c, energy, kof)
     fprintf(1, '---------START--------\n');
     fprintf(1, 'update\n');
-%   пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+%   Считывание собственных частот экспериментальных и расчетных
     f = fopen(f_freq_t, 'r');
     str = ' ';
     count = 0;
@@ -21,16 +21,17 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof)
     f = fopen(f_freq_r, 'r');
     for i = 1:count
         str = fgets(f);
+%         fprintf(1, 'str = %s', str);
         freq_reckon(i) = sscanf(str,'%f');
     end;
     fclose(f);
     
-    fprintf(1, 'пїЅ  reckon freq => test freq\n');
+    fprintf(1, '№  reckon freq => test freq\n');
     for i = 1:length(freq_reckon)
         fprintf(1, '%d) %f Hz => %f Hz\n', i, freq_reckon(i), freq_test(i));
     end;
     
-    c(c==0) = 0.0001;
+%     c(c==0) = 0.0001;
     % fprintf(1, 'length(res(:,1)) = %d\n', length(energy(2:end,1)));
     % fprintf(1, 'length(c) = %d\n', length(c));
 %     rest = energy';
@@ -40,22 +41,33 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof)
 %     fprintf(1,'width = %d\nhigth = %d\n', width, higth);
     % size(alpha)
 %     size(c)
+%     energy
     dlmwrite([f_freq_r(1:end-4) '.Stiffnes_in.txt'] , c, '\t');
     for k=1:6
         alpha = zeros(higth, width);
         for i = 1:higth
             for j = 1:width
-                alpha(i,j) = energy(i, j)/c(i,k);
+                alpha(i,j) = energy(i,j) / 2 / freq_reckon(j);
             end
         end
         % 
-        % fprintf('size alpha\n');
+%         fprintf('size alpha\n');
+%         alpha
 %         alpha = alpha(1:end,1:count);
-        % size(alpha)
+%         size(alpha)
         % 
-%         dlmwrite([f_freq_r '.Matrix_1.txt'] , alpha, '\t');
+        dlmwrite([f_freq_r(1:end-4) '.alpha.txt'] , alpha, '\t');
 %         dlmwrite([f_freq_r '.Matrix_2.txt'], pinv(alpha), '\t');
         % 
+%         fprintf('c(1)\n');
+%         size(c(1:end, 1))
+%         c(1:end, 1)
+%         fprintf('pinv(alpha)\n');
+%         pinv(alpha)
+%         fprintf('(freq_test - freq_reckon)\n');
+%         freq_test - freq_reckon
+%         fprintf('pinv(alpha) * (freq_test - freq_reckon)\n');
+%         pinv(alpha) * (freq_test - freq_reckon)
         c(1:end,k) = c(1:end,k) + pinv(alpha') * (freq_test - freq_reckon) * kof;
         dlmwrite([f_freq_r(1:end-4) '.Delta.txt'], pinv(alpha') * (freq_test - freq_reckon) * kof ,'-append');
         %

@@ -1,17 +1,35 @@
 %######################################################################## 
-in_file = 'full_cub.dat';
-f06_file = 'full_cub.f06';
-out_file = 'full_cub.dat';
+% in_file = 'full_cub.dat';
+% f06_file = 'full_cub.f06';
+% out_file = 'full_cub.dat';
+% % % % % % % % % % % % % % % % % 
+% in_file = 'Condor.bdf';
+% f06_file = 'condor.f06';
+% out_file = 'Condor.bdf';
+in_file = 'tetra.dat';
+f06_file = 'tetra.f06';
+out_file = 'tetra.dat';
+% % % % % % % % % % % % % % % % % 
+% in_file = '1degre.dat';
+% f06_file = '1degre.f06';
+% out_file = '1degre.dat';
+% % % % % % % % % % % % % % % % % 
+% in_file = '2deg_s-2deg.dat';
+% f06_file = '2deg_s-2deg.f06';
+% out_file = '2deg_s-2deg.dat';
+% % % % % % % % % % % % % % % % % 
 freq_rek_file = 'Freq_reckon.txt';
 freq_test_file = 'Freq_test.txt';
 % path = [pwd '\5-attemp'];
-path = [pwd '\9-attemp'];
+path = [pwd '\1-3D_task'];
+% path = [pwd '\1-attemp'];
 kof = 1; %Масштабный множитель при уточнении
-START = 2;
-STEP = 2000;
+START = 1;
+STEP = 30;
 %########################################################################
-delete('kof.temp');
-diary([path '\' datestr(now,'yy-mmmm-dd_HH-MM-SS') '.log']);
+delete([pwd '\kof.temp']);
+delete([pwd '\n.temp']);
+diary([path '\' datestr(now,'yy-mmmm-dd HH-MM-SS') '.log']);
 for i=START:STEP
     diary on;
     [i_in_file, i_f06_file, i_freq_rek_file, i_out_file, kof] = ...

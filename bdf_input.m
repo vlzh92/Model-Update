@@ -24,11 +24,11 @@ fseek(fin, 0, 'bof');
 
 while ~feof(fin)
     str = fgets(fin);
-    if strfind(str, 'PBUSH') 
-        n_p = n_p+1;
+    if strfind(str, 'PBUSH') & isempty(strfind(str,'$*'))
+        n_p = n_p + 1;
     else
-        if strfind(str, 'CBUSH') 
-            n_c = n_c+1;
+        if strfind(str, 'CBUSH') & isempty(strfind(str,'$*'))
+            n_c = n_c + 1;
         end;
     end;
     if str(1) == 'P'
@@ -68,7 +68,7 @@ while ~feof(fin)
     str = fgets(fin);
    
     if strfind(str, 'PBUSH') & isempty(strfind(str, '$*'))
-        fprintf(1,'\nPBUSH: %s',str);
+%         fprintf(1,'\nPBUSH: %s',str);
         ip = ip+1;
         res = pbush_property_read(str);     % считывание записи PBUSH
         pbush_num(ip) = res(1);
@@ -76,7 +76,7 @@ while ~feof(fin)
         pbush_c(ip,:) = res(2:7);
     else
         if strfind(str, 'CBUSH') & isempty(strfind(str, '$*'))
-            fprintf(1,'CBUSH: %s',str);
+%             fprintf(1,'CBUSH: %s',str);
             ic = ic+1;
             [cbush_num(ic,:)] = cbush_property_read(str);   % считывание записи CBUSH
         else
@@ -90,13 +90,15 @@ fclose(fin); fclose(fout);
 %
 % ѕрисвоение жесткостей элементам CBUSH
 for i = 1:n_c
-    ind = pbush_num - cbush_num(i,2) == 0;
+    ind = pbush_num - cbush_num(i,2) == 0
 %     pbush_num
 %     cbush_num(i,2)
-    fprintf(1, 'i = %d n_c = %d\n', i, n_c);
+%     fprintf(1, 'i = %d n_c = %d\n', i, n_c);
 %     pbush_c(ind,:)
 %     size(cbush_c)
 %     size(pbush_c)
+cbush_c
+pbush_c
     cbush_c(i,:) = pbush_c(ind,:);
 end;
 %
@@ -120,7 +122,7 @@ function num = cbush_property_read (str)
         [st, str] = strtok(str, ',');
         n3 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
-                n4 = sscanf(st,'%d');
+        n4 = sscanf(st,'%d');
     else
 %         fprintf(1, '\cbush_property_read без зап€тых\n');
         n1 = sscanf(str(9:16) ,'%d');
@@ -151,10 +153,16 @@ function res = pbush_property_read (str)
         n = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
         for i = 1:6
+           fprintf('\n------------------------\n');
            [st, str] = strtok(str, ',');
            % if isempty(st), break; end;
-           st = prepare_str_e(st);
-           c(i) = sscanf(st, '%e');
+           st = prepare_str_e(st);           
+%            fprintf('\nst=|%s| strlen(st) = %d isfloat(st) = %d\n', st, length(st), isfloat(str2double(st)));
+           if(isnan(str2double(st)))
+            c(i) = 0;
+            continue;
+           end;
+           c(i) = sscanf(st, '%e')
 %            fprintf(1, 'c(%d) = %e\n', i, c(i));
         end;
     else

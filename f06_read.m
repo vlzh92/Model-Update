@@ -3,9 +3,6 @@ fprintf('---------START---------\n');
 fprintf('f06_read\n');
 % ‘ункци€ считывани€ f06
 f = fopen(name,'r');
-% mode_scan(f)
-% fclose(f);
-% error('Fuck');
 nel = length(num); % количество элементов CBUSH
 %
 str = ' ';
@@ -13,10 +10,29 @@ fprintf('Finde NUMBER OF ROOTS FOUND\n');
 while isempty(strfind(str, 'NUMBER OF ROOTS FOUND')) && ~feof(f)
     str = fgets(f);
 end;
-exeption(f,  'ERROR! NOT FOUND NUMBER OF ROOTS FOUND!');
-str1 = str(76:end);
-n = sscanf(str1,'%d');      % количество частот
-%
+% exeption(f,  'ERROR! NOT FOUND NUMBER OF ROOTS FOUND!');
+% fprintf(1, '%s', str);
+if isempty(strfind(str, 'NUMBER OF ROOTS FOUND'))
+    fprintf(2,'WARNING! NOT FOUND NUMBER OF ROOTS FOUND!\n');
+    if ~exist('n.temp', 'file')
+        n = str2num(input('Enter number of freq: ','s'));
+        fn = fopen('n.temp','w');
+        fprintf(fn,'%d',n);
+        fclose(fn);
+        fprintf(2,'NUMBER OF ROOTS = %d write into file n.temp!\n', n);
+    else
+        fn = fopen('n.temp','r');
+        n = sscanf(fgets(fn),'%d',1);
+        fclose(fn);
+        fprintf(2,'NUMBER OF ROOTS = %d founded in file n.temp!\n', n);
+    end;
+    
+    fseek(f,0,'bof');
+else
+    str1 = str(76:end);
+    n = sscanf(str1,'%d');      % количество частот
+end;
+
 fprintf('Finde R E A L   E I G E N V A L U E S\n');
 while isempty(strfind(str, 'R E A L   E I G E N V A L U E S')) && ~feof(f)
     str = fgets(f);
@@ -30,7 +46,14 @@ exeption(f,  'ERROR! NO.       ORDER!');
 freq = zeros(n,1);
 for i = 1:n
     str = fgets(f);
-    str1 = str(60:end);
+    if ~isempty(strfind(str, 'NASTRAN'))
+        fclose(f);
+        fprintf(2,'Not founded freq (%d/%d)\n', i, n);
+        return
+    end;
+    str1 = str(40:end);
+%     str1 = str(60:end);
+%     freq(i) = 2*pi*sscanf(str1,'%e',1);  % считывание собственных частот, √ц
     freq(i) = sscanf(str1,'%e',1);  % считывание собственных частот, √ц
 %     fprintf(1, 'freq (%d) = %f Hz\n', i, freq(i));
 end;
@@ -173,8 +196,8 @@ function res = mode_scan(f)
 %         fprintf(1,'\n###########################################################\n');
         acc = acc + count;
     end;
-    acc
-    size(res)
+%     acc
+%     size(res)
 
 end
 %

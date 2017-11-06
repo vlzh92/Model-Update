@@ -13,6 +13,7 @@ function plot_freq(path_test, path, num_iter)
         plot(1:num_iter, ones(num_iter)*freq_t(i), '--r', 1:num_iter, freq(i,:),'b', 'LineWidth',2);
         axis([1 num_iter min(a)*0.98 max(a)*1.02]);
         grid on;
+        title(datestr(now,'yy-mmmm-dd_HH-MM-SS'));
         xlabel('Iteration','FontSize', 8);
         ylabel('Freq [Hz]','FontSize', 8);
     end;
@@ -22,13 +23,18 @@ function plot_freq(path_test, path, num_iter)
 %####################################################
 %График целефой функции
     figure
-    freq_t = freq_t * ones(1, num_iter);   
-    aim = sum(abs(freq_t - freq));
+    freq_t = freq_t * ones(1, num_iter);
+    if num_freq ~= 1
+        aim = sum(abs(freq_t - freq));
+    else
+        aim = abs(freq_t - freq);
+    end;
     plot(1:num_iter, aim, 'LineWidth',2);
     axis([1 num_iter 0 max(aim)]);
     grid on;
     xlabel('Iteration','FontSize', 8);
     ylabel('Sum(Delta) [Hz]','FontSize', 8);
+    title(datestr(now,'yy-mmmm-dd HH-MM-SS'));
 end
 
 function freq = read_freq(path, num)

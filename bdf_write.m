@@ -38,7 +38,7 @@ for i = 1:nc
     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
 end;
 %------------------------------------------------
-fprintf(fout,'ENDDATA\n');
+fprintf(fout,'\nENDDATA\n');
 fclose(fout);
 
 fprintf('\nbdf_write\n');
