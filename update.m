@@ -1,4 +1,4 @@
-function c = update(f_freq_r, f_freq_t, c, energy, kof)
+function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
     fprintf(1, '---------START--------\n');
     fprintf(1, 'update\n');
 %   —читывание собственных частот экспериментальных и расчетных
@@ -44,32 +44,41 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof)
 %     energy
     dlmwrite([f_freq_r(1:end-4) '.Stiffnes_in.txt'] , c, '\t');
     for k=1:6
-        alpha = zeros(higth, width);
+        alpha = zeros(width,higth);
         for i = 1:higth
             for j = 1:width
-                alpha(i,j) = energy(i,j) / 2 / freq_reckon(j);
+                if c(i, k) ~= 0
+                    alpha(i,j) = energy(i,j) / freq_reckon(j) / c(i, k);
+%                     fprintf('energy(i=%d,j=%d) = %f freq_reckon(j) = %f c(j, k) = %f alpha(i,j) = %3.5f\n', i, j, energy(i,j), freq_reckon(j), c(i, k), alpha(i,j));
+                else
+                    alpha(i,j) = 0;
+                end;
             end
         end
-        % 
-%         fprintf('size alpha\n');
+        format long
+        dlmwrite([f_freq_r(1:end-4) '.alpha.txt'] , alpha, '-append');
 %         alpha
-%         alpha = alpha(1:end,1:count);
-%         size(alpha)
-        % 
-        dlmwrite([f_freq_r(1:end-4) '.alpha.txt'] , alpha, '\t');
-%         dlmwrite([f_freq_r '.Matrix_2.txt'], pinv(alpha), '\t');
-        % 
-%         fprintf('c(1)\n');
-%         size(c(1:end, 1))
-%         c(1:end, 1)
-%         fprintf('pinv(alpha)\n');
 %         pinv(alpha)
-%         fprintf('(freq_test - freq_reckon)\n');
-%         freq_test - freq_reckon
-%         fprintf('pinv(alpha) * (freq_test - freq_reckon)\n');
-%         pinv(alpha) * (freq_test - freq_reckon)
-        c(1:end,k) = c(1:end,k) + pinv(alpha') * (freq_test - freq_reckon) * kof;
-        dlmwrite([f_freq_r(1:end-4) '.Delta.txt'], pinv(alpha') * (freq_test - freq_reckon) * kof ,'-append');
+%    fprintf('Energy\n');
+%     energy
+%    fprintf('alpha\n');
+%    alpha'
+%    fprintf('pinv(alpha)\n');
+%    pinv(alpha')
+%    fprintf('delta_freq\n');
+%    freq_test - freq_reckon
+%    fprintf('kof \n');
+%    kof
+%    fprintf('res\n')
+%    pinv(alpha') * (freq_test - freq_reckon) * kof
+        delta = pinv(alpha') * (freq_test - freq_reckon) * kof;
+        if max(delta) ~= 0
+            kof2 = max(c(1:end,k)) * changeable/ max(abs(delta)) / 100;
+        else
+            kof2 = 0;
+        end;
+        c(1:end,k) = c(1:end,k) + delta * kof2;
+        dlmwrite([f_freq_r(1:end-4) '.Delta.txt'], delta * kof2,'-append');
         %
     end;
     c(c<0) = 0;

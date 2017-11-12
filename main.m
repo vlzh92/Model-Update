@@ -23,9 +23,10 @@ freq_test_file = 'Freq_test.txt';
 % path = [pwd '\5-attemp'];
 path = [pwd '\1-3D_task'];
 % path = [pwd '\1-attemp'];
-kof = 1; %Масштабный множитель при уточнении
-START = 1;
-STEP = 30;
+kof = 0.01; %Масштабный множитель при уточнении
+changeable = 2; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
+START = 30;
+STEP = 200;
 %########################################################################
 delete([pwd '\kof.temp']);
 delete([pwd '\n.temp']);
@@ -51,7 +52,7 @@ for i=START:STEP
     end;
     
     % Изменение свойст материалов
-    c = update(i_freq_rek_file, 'Freq_test.txt', c, res(2:end,1:end), kof);
+    c = update(i_freq_rek_file, 'Freq_test.txt', c, res(2:end,1:end), kof, changeable);
     % Запись bdf для последующего расчёта
     num2 = num; c2 = c;
     bdf_write(i_out_file, num2, c2, nmax);

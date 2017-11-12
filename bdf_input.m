@@ -97,8 +97,8 @@ for i = 1:n_c
 %     pbush_c(ind,:)
 %     size(cbush_c)
 %     size(pbush_c)
-cbush_c
-pbush_c
+% cbush_c
+% pbush_c
     cbush_c(i,:) = pbush_c(ind,:);
 end;
 %
@@ -153,7 +153,7 @@ function res = pbush_property_read (str)
         n = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
         for i = 1:6
-           fprintf('\n------------------------\n');
+%            fprintf('\n------------------------\n');
            [st, str] = strtok(str, ',');
            % if isempty(st), break; end;
            st = prepare_str_e(st);           
@@ -162,7 +162,7 @@ function res = pbush_property_read (str)
             c(i) = 0;
             continue;
            end;
-           c(i) = sscanf(st, '%e')
+           c(i) = sscanf(st, '%e');
 %            fprintf(1, 'c(%d) = %e\n', i, c(i));
         end;
     else

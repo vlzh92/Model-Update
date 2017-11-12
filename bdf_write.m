@@ -24,7 +24,12 @@ for i = 1:nc
     % Для каждого CBUSH записывается отдельное свойство элемента
     str = sprintf('PBUSH,%8d,K,',i+nmax);
     for j =1:6
-        str2 = sprintf('%8.2e,',c(i,j));
+        if c(i,j) == 0
+            str2 = '';
+        else
+            str2 = sprintf('%8.2e,',c(i,j));
+        end;
+%         fprintf('str2 = %s\n', str2);
         % Обработка мантиссы
         if ~isempty(str2(:) == 'e')
             ind = str2(:) == 'e' ;
@@ -35,7 +40,8 @@ for i = 1:nc
     end;
     fprintf(fout,'%s\n',str);
     %
-    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+%     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
 end;
 %------------------------------------------------
 fprintf(fout,'\nENDDATA\n');
