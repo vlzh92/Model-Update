@@ -18,7 +18,7 @@ function start_nastran(out_file)
     [status, cmdout] = system(is_it_start);
     while ~isempty(cmdout) 
         pause(p2)
-        fprintf(1,'%s has been working already %d s (status=%d)\n', cmdout(1:10), count * 5, status);
+        fprintf(1,'%s has been working already %d s (status=%d)\n', cmdout(1:10), count * p2, status);
         [status, cmdout] = system(is_it_start);
         count = count + 1;    
     end;

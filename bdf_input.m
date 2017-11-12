@@ -60,9 +60,9 @@ i = 0;
 while ~feof(fin)
     if sum(i*ao==ar)
         fprintf(1, '|%.2f%', i/maxl*100);
-        if i/maxl*100 > 95
-            fprintf(1, '\n');
-        end;
+%         if i/maxl*100 > 95
+%             fprintf(1, '\n');
+%         end;
     end;
     i = i + 1;
     str = fgets(fin);
@@ -90,7 +90,7 @@ fclose(fin); fclose(fout);
 %
 % Присвоение жесткостей элементам CBUSH
 for i = 1:n_c
-    ind = pbush_num - cbush_num(i,2) == 0
+    ind = pbush_num - cbush_num(i,2) == 0;
 %     pbush_num
 %     cbush_num(i,2)
 %     fprintf(1, 'i = %d n_c = %d\n', i, n_c);

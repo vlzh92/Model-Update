@@ -36,20 +36,20 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
     % fprintf(1, 'length(c) = %d\n', length(c));
 %     rest = energy';
     % fprintf(1, 'length(resT(:,1)) = %d\n', length(rest(:,1)));
-    width = length(freq_reckon);
-    higth = length(energy(:,1));
+    width = length(freq_reckon)
+    higth = length(energy(:,1))
 %     fprintf(1,'width = %d\nhigth = %d\n', width, higth);
     % size(alpha)
 %     size(c)
 %     energy
     dlmwrite([f_freq_r(1:end-4) '.Stiffnes_in.txt'] , c, '\t');
     for k=1:6
-        alpha = zeros(width,higth);
+        alpha = zeros(higth,width);
         for i = 1:higth
             for j = 1:width
                 if c(i, k) ~= 0
                     alpha(i,j) = energy(i,j) / freq_reckon(j) / c(i, k);
-%                     fprintf('energy(i=%d,j=%d) = %f freq_reckon(j) = %f c(j, k) = %f alpha(i,j) = %3.5f\n', i, j, energy(i,j), freq_reckon(j), c(i, k), alpha(i,j));
+%                     fprintf('energy(i=%d,j=%d) = %f freq_reckon(j) = %f c(i, k) = %f alpha(i,j) = %3.5f\n', i, j, energy(i,j), freq_reckon(j), c(i, k), alpha(i,j));
                 else
                     alpha(i,j) = 0;
                 end;
@@ -71,14 +71,14 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
 %    kof
 %    fprintf('res\n')
 %    pinv(alpha') * (freq_test - freq_reckon) * kof
-        delta = pinv(alpha') * (freq_test - freq_reckon) * kof;
+%         size(alpha)
+        delta = pinv(alpha)' * (freq_test - freq_reckon) * kof;
         if max(delta) ~= 0
             kof2 = max(c(1:end,k)) * changeable/ max(abs(delta)) / 100;
-        else
-            kof2 = 0;
+            delta = delta * kof2;
         end;
-        c(1:end,k) = c(1:end,k) + delta * kof2;
-        dlmwrite([f_freq_r(1:end-4) '.Delta.txt'], delta * kof2,'-append');
+        c(1:end,k) = c(1:end,k) + delta;
+        dlmwrite([f_freq_r(1:end-4) '.Delta.txt'], delta,'-append');
         %
     end;
     c(c<0) = 0;

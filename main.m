@@ -20,13 +20,13 @@ out_file = 'tetra.dat';
 % % % % % % % % % % % % % % % % % 
 freq_rek_file = 'Freq_reckon.txt';
 freq_test_file = 'Freq_test.txt';
-% path = [pwd '\5-attemp'];
+% path = [pwd '\1-Condr'];
 path = [pwd '\1-3D_task'];
 % path = [pwd '\1-attemp'];
-kof = 0.01; %Масштабный множитель при уточнении
-changeable = 2; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
-START = 30;
-STEP = 200;
+kof = 1; %Масштабный множитель при уточнении
+changeable = 4; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
+START = 2;
+STEP = 1000;
 %########################################################################
 delete([pwd '\kof.temp']);
 delete([pwd '\n.temp']);

@@ -76,3 +76,6 @@ delete_this_file.m
 
 *.gitignore*
 test_pinv.m
+*.png
+*.fig
+*.diag
