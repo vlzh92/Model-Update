@@ -34,7 +34,7 @@ else
 end;
 
 fprintf('Finde R E A L   E I G E N V A L U E S\n');
-while isempty(strfind(str, 'R E A L   E I G E N V A L U E S')) && ~feof(f)
+while ~contains(str, 'R E A L   E I G E N V A L U E S') && ~feof(f)
     str = fgets(f);
 end;
 exeption(f,  'ERROR! NOT FOUND R E A L   E I G E N V A L U E S!');

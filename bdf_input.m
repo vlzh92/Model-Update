@@ -12,7 +12,7 @@ i = 0;
 while ~feof(fin)
     fgets(fin);
     i = i + 1;
-end;
+end
 fprintf('file %s have %d lines\n', name, i);
 fprintf('start count CBUSH PBUSH\n');
 step = fix(i/10);
@@ -24,25 +24,25 @@ fseek(fin, 0, 'bof');
 
 while ~feof(fin)
     str = fgets(fin);
-    if strfind(str, 'PBUSH') & isempty(strfind(str,'$*'))
+    if contains(str, 'PBUSH') && ~contains(str,'$*')
         n_p = n_p + 1;
     else
-        if strfind(str, 'CBUSH') & isempty(strfind(str,'$*'))
+        if contains(str, 'CBUSH') && ~contains(str,'$*')
             n_c = n_c + 1;
-        end;
-    end;
+        end
+    end
     if str(1) == 'P'
         n = read_prop_num (str);
         nmax = max(nmax, n);
-    end;
+    end
     if sum(i*ao==ar)
         fprintf(1, '|%.2f%', i/maxl*100);
         if i/maxl*100 > 95
             fprintf(1, '\n');
-        end;
-    end;
+        end
+    end
     i = i + 1;
-end;
+end
 fprintf('end count CBUSH PBUSH\n');
 fprintf('CBUSH = %d PBUSH = %d\n', n_c, n_p);
 %
@@ -63,11 +63,11 @@ while ~feof(fin)
 %         if i/maxl*100 > 95
 %             fprintf(1, '\n');
 %         end;
-    end;
+    end
     i = i + 1;
     str = fgets(fin);
    
-    if strfind(str, 'PBUSH') & isempty(strfind(str, '$*'))
+    if contains(str, 'PBUSH') && ~contains(str, '$*')
 %         fprintf(1,'\nPBUSH: %s',str);
         ip = ip+1;
         res = pbush_property_read(str);     % считывание записи PBUSH
@@ -75,17 +75,17 @@ while ~feof(fin)
 %         fprintf(1, '%d) %f %f %f %f %f %f', ip, res(2:7));
         pbush_c(ip,:) = res(2:7);
     else
-        if strfind(str, 'CBUSH') & isempty(strfind(str, '$*'))
+        if contains(str, 'CBUSH') && ~contains(str, '$*')
 %             fprintf(1,'CBUSH: %s',str);
             ic = ic+1;
             [cbush_num(ic,:)] = cbush_property_read(str);   % считывание записи CBUSH
         else
-           if isempty(strfind(str, 'ENDDATA'))
+           if ~contains(str, 'ENDDATA')
                fprintf(fout,'%s',str);
-           end;
-        end;
-    end;
-end;
+           end
+        end
+    end
+end
 fclose(fin); fclose(fout);
 %
 % Присвоение жесткостей элементам CBUSH
@@ -100,7 +100,7 @@ for i = 1:n_c
 % cbush_c
 % pbush_c
     cbush_c(i,:) = pbush_c(ind,:);
-end;
+end
 %
 res = struct('nmax', nmax, 'num',cbush_num(:, [ 1 3 4]), 'c', cbush_c);
 
@@ -112,16 +112,16 @@ end
 
 function num = cbush_property_read (str)
 % Функция считывания записи CBUSH
-    if strfind(str, ',')
+    if contains(str, ',')
 %         fprintf(1, '\ncbush_property_read с запятыми\n');
-        [st, str] = strtok(str, ',');
+        [~, str] = strtok(str, ',');
         [st, str] = strtok(str, ',');
         n1 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
         n2 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
         n3 = sscanf(st,'%d');
-        [st, str] = strtok(str, ',');
+        [st, ~] = strtok(str, ',');
         n4 = sscanf(st,'%d');
     else
 %         fprintf(1, '\cbush_property_read без запятых\n');
@@ -129,7 +129,7 @@ function num = cbush_property_read (str)
         n2 = sscanf(str(17:24),'%d');
         n3 = sscanf(str(25:32),'%d');
         n4 = sscanf(str(33:40),'%d');
-    end;
+    end
     num = [n1 n2 n3 n4];    
 end
 
@@ -142,16 +142,16 @@ function res = pbush_property_read (str)
         %str = strcat(str,char(ones(1,73-l)*49));
         str = [str, ' '];
         l = length(str);
-    end;
+    end
     %
     c = zeros(1,6);
 
-    if strfind(str, ',')
+    if contains(str, ',')
 %         fprintf(1, '\npbush_property_read с запятыми\n');
-        [st, str] = strtok(str, ',');
+        [~, str] = strtok(str, ',');
         [st, str] = strtok(str, ',');
         n = sscanf(st,'%d');
-        [st, str] = strtok(str, ',');
+        [~, str] = strtok(str, ',');
         for i = 1:6
 %            fprintf('\n------------------------\n');
            [st, str] = strtok(str, ',');
@@ -161,10 +161,11 @@ function res = pbush_property_read (str)
            if(isnan(str2double(st)))
             c(i) = 0;
             continue;
-           end;
+           end
+           st = prepare_str_e(st);
            c(i) = sscanf(st, '%e');
 %            fprintf(1, 'c(%d) = %e\n', i, c(i));
-        end;
+        end
     else
 %         fprintf(1, '\npbush_property_read без запятых\n');
         n = sscanf(str(9:16),'%d');
@@ -178,7 +179,7 @@ function res = pbush_property_read (str)
                     str2(j) = str1(j);
                     if str1(j) == '.'
                         metka = 1;
-                    end;
+                    end
                 else
                     if metka == 1
                         if str1(j) == '+' || str1(j) == '-'
@@ -188,130 +189,135 @@ function res = pbush_property_read (str)
                         else
                             str2(j) = str1(j);
                             metka = 0;
-                        end;
+                        end
                     else
                         if metka == 2
                             str2(j+1) = str1(j);
-                        end;
-                    end;
-                end;
-            end;
+                        end
+                    end
+                end
+            end
             if ~isempty(deblank(str2))
+                str2 = prepare_str_e(str2);
                 c(i) = sscanf(str2,'%e');
-            end;
-        end;
-    end;
+            end
+        end
+    end
 
     res = [n c];
 end
+
 
 % =========================================================
 function n = read_prop_num (str)
 % Вспомогательная функция для подсчёта общего количества свойств элементов
 i=0;
-if ~i && ~isempty(strfind(str, 'PAABSF'))
+if ~i && contains(str, 'PAABSF')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PACABS'))
+end
+if ~i && contains(str, 'PACABS')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PACBAR'))
+end
+if ~i && contains(str, 'PACBAR')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PAERO'))
+end
+if ~i && contains(str, 'PAERO')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBAR'))
+end
+if ~i && contains(str, 'PBAR')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBCOMP'))
+end
+if ~i && contains(str, 'PBCOMP')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBEAM'))
+end
+if ~i && contains(str, 'PBEAM')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBEND'))
+end
+if ~i && contains(str, 'PBEND')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBMSECT'))
+end
+if ~i && contains(str, 'PBMSECT')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBRSECT'))
+end
+if ~i && contains(str, 'PBRSECT')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PBUSH'))
+end
+if ~i && contains(str, 'PBUSH')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PCOMP'))
+end
+if ~i && contains(str, 'PCOMP')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PDAMP'))
+end
+if ~i && contains(str, 'PDAMP')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PDUMi'))
+end
+if ~i && contains(str, 'PDUMi')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PELAS'))
+end
+if ~i && contains(str, 'PELAS')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PGAP'))
+end
+if ~i && contains(str, 'PGAP')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PHBDY'))
+end
+if ~i && contains(str, 'PHBDY')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PINT'))
+end
+if ~i && contains(str, 'PINT')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PLPLANE'))
+end
+if ~i && contains(str, 'PLPLANE')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PLSOLID'))
+end
+if ~i && contains(str, 'PLSOLID')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PMASS'))
+end
+if ~i && contains(str, 'PMASS')
     i = 4;
-end;
-if ~i && ~isempty(strfind(str, 'PRAC'))
+end
+if ~i && contains(str, 'PRAC')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PROD'))
+end
+if ~i && contains(str, 'PROD')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PSHEAR'))
+end
+if ~i && contains(str, 'PSHEAR')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PSHELL'))
+end
+if ~i && contains(str, 'PSHELL')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PSOLID'))
+end
+if ~i && contains(str, 'PSOLID')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PTUBE'))
+end
+if ~i && contains(str, 'PTUBE')
     i = 1;
-end;
-if ~i && ~isempty(strfind(str, 'PVISC'))
+end
+if ~i && contains(str, 'PVISC')
     i = 2;
-end;
-if ~i && ~isempty(strfind(str, 'PWELD'))
+end
+if ~i && contains(str, 'PWELD')
     i = 1;
-end;
+end
 %
 if i
     n = sscanf(str(9:16),'%d') + i-1;
 else 
     n = 0;
-end;
+end
 end
 
 function str = prepare_str_e(str)
+    if ~contains(str,'e')
+        return;
+    end
     c = 0;
-    if ~isempty(strfind(str,'+'))
+    if contains(str,'+')
         c = strfind(str,'+');
-    elseif ~isempty(strfind(str,'-'))
+    elseif contains(str,'-')
         c = strfind(str,'-');
-    end;
+    end
     if c ~= 0
         str = [str(1:c-1),'e', str(c:end)];
-    end;
+    end
 end

@@ -14,7 +14,7 @@ out_file = 'tetra.dat';
 % f06_file = '1degre.f06';
 % out_file = '1degre.dat';
 % % % % % % % % % % % % % % % % % 
-% in_file = '2deg_s-2deg.dat';
+% in_file = '2deg_s-2deg.dat3';
 % f06_file = '2deg_s-2deg.f06';
 % out_file = '2deg_s-2deg.dat';
 % % % % % % % % % % % % % % % % % 
@@ -24,8 +24,8 @@ freq_test_file = 'Freq_test.txt';
 path = [pwd '\1-3D_task'];
 % path = [pwd '\1-attemp'];
 kof = 1; %Масштабный множитель при уточнении
-changeable = 4; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
-START = 2;
+changeable = 0; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
+START = 1;
 STEP = 1000;
 %########################################################################
 delete([pwd '\kof.temp']);
