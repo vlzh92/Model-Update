@@ -1,5 +1,6 @@
 %######################################################################## 
-conf = struct('in_file','tetra.dat',... %Имя файла модели, которая будет уточнена
+conf = struct(...
+    'in_file','tetra.dat',... %Имя файла модели, которая будет уточнена
     'f06_file', 'tetra.f06',... %Имя файла с результатами расчета
     'out_file', 'tetra.dat',... %Имя файла с изменёнными жесткостями
     'freq_rek_file', 'Freq_reckon.txt',... %Имя файла с расчетными частотами
@@ -15,8 +16,9 @@ conf = struct('in_file','tetra.dat',... %Имя файла модели, кот�
     'p1', 1, ... % ожидание результата сразу после запуска в секундах
     'p2', 1, ...  % интервал запросов состояния nastran в секундах
     'nastran', '"D:\Siemens\NX\NXNASTRAN\bin\nastran64Lw.exe"', ... %Путь до решателя 
-    'is_it_start', 'tasklist | findstr /i nastran.exe' ... % Имя решателя в консоли после запуска
-    );
+    'is_it_start', 'tasklist | findstr /i nastran.exe', ... % Имя решателя в консоли после запуска
+    'nas_param', 'parallel=4 scratch=yes'... %Параметры решателя
+);
 % in_file = 'full_cub.dat';
 % f06_file = 'full_cub.f06';
 % out_file = 'full_cub.dat';
@@ -24,9 +26,9 @@ conf = struct('in_file','tetra.dat',... %Имя файла модели, кот�
 % in_file = 'Condor.bdf';
 % f06_file = 'condor.f06';
 % out_file = 'Condor.bdf';
-in_file = 'tetra.dat';
-f06_file = 'tetra.f06';
-out_file = 'tetra.dat';
+% in_file = 'tetra.dat';
+% f06_file = 'tetra.f06';
+% out_file = 'tetra.dat';
 % % % % % % % % % % % % % % % % % 
 % in_file = '1degre.dat';
 % f06_file = '1degre.f06';
@@ -36,23 +38,27 @@ out_file = 'tetra.dat';
 % f06_file = '2deg_s-2deg.f06';
 % out_file = '2deg_s-2deg.dat';
 % % % % % % % % % % % % % % % % % 
-freq_rek_file = 'Freq_reckon.txt';
-freq_test_file = 'Freq_test.txt';
+% freq_rek_file = 'Freq_reckon.txt';
+% freq_test_file = 'Freq_test.txt';
 % path = [pwd '\1-Condr'];
-path = [pwd '\1-3D_task'];
+% path = [pwd '\1-3D_task'];
 % path = [pwd '\1-attemp'];
-kof = 0.1; %Масштабный множитель при уточнении
-changeable = 0; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
-START = 30;
-STEP = 100;
+% kof = 0.1; %Масштабный множитель при уточнении
+% changeable = 0; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
+START = conf.START;
+STEP = conf.STEP;
 %########################################################################
 delete([pwd '\kof.temp']);
 delete([pwd '\n.temp']);
-diary([path '\' datestr(now,'yy-mmmm-dd HH-MM-SS') '.log']);
-for i=START:STEP
-    diary on;
+if conf.LOG
+    diary([conf.path '\' datestr(now,'yy-mmmm-dd HH-MM-SS') '.log']);
+end
+for i = START:STEP
+    if conf.LOG
+        diary on;
+    end
     [i_in_file, i_f06_file, i_freq_rek_file, i_out_file, kof] = ...
-    initialize(path, in_file, f06_file, freq_rek_file, out_file, kof, i);
+    initialize(conf, i);
     % Чтение заданного bdf
     res = bdf_input(i_in_file);
     num = res.num; % 1й столбец - номера элементов cbush, 2й и 3й - номера входящих в них узлов
@@ -66,17 +72,19 @@ for i=START:STEP
     % собственных форм, остальные - поэлементно, каждый столбец соответствует собственной
     % форме.
     if i>1
-        plot_freq(freq_test_file, i_freq_rek_file, i);
+        plot_freq(conf.freq_test_file, i_freq_rek_file, i);
     end
     
     % Изменение свойст материалов
-    c = update(i_freq_rek_file, 'Freq_test.txt', c, res(2:end,1:end), kof, changeable);
+    c = update(i_freq_rek_file, conf.freq_test_file, c, res(2:end,1:end), conf);
     % Запись bdf для последующего расчёта
     num2 = num; c2 = c;
     bdf_write(i_out_file, num2, c2, nmax);
     % Запуск nastran
-    start_nastran(i_out_file);
-    diary off
+    start_nastran(i_out_file, conf);
+    if conf.LOG
+        diary off
+    end
 end
 clear all;
 

@@ -1,7 +1,8 @@
-function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
+function c = update(f_freq_r, f_freq_t, c, energy, conf)
     fprintf(1, '---------START--------\n');
     fprintf(1, 'update\n');
     
+    kof = conf.kof;
 %     c_min = min(mean(c'));
 %   —читывание собственных частот экспериментальных и расчетных
     f = fopen(f_freq_t, 'r');

@@ -1,12 +1,14 @@
-function start_nastran(out_file)
+function start_nastran(out_file, conf)
 %     nastran = '"c:\MSC.Software\MD_Nastran\bin\mdnastranw.exe"';
 %     is_it_start = 'tasklist | findstr /i analysis.exe';
-    p1 = 1; % ожидание результата сразу после запуска
-    p2 = 1; % интервал запросов состояния nastran
-    nastran = '"D:\Siemens\NX\NXNASTRAN\bin\nastran64Lw.exe"';
-    is_it_start = 'tasklist | findstr /i nastran.exe';
+    p1 = conf.p1; % ожидание результата сразу после запуска
+    p2 = conf.p2; % интервал запросов состояния nastran
+%     nastran = '"D:\Siemens\NX\NXNASTRAN\bin\nastran64Lw.exe"';
+    nastran = conf.nastran;
+    is_it_start = conf.is_it_start;
+    nas_param = conf.nas_param;
 
-    nastran = [nastran ' ' out_file ' parallel=4' ' out=' out_file(1:end-4) ' scratch=yes'];
+    nastran = [nastran ' ' out_file ' out=' out_file(1:end-4) nas_param];
     fprintf(1, 'Start NX Solver\n%s\n', nastran);
     [status, cmdout] = system(nastran,'-echo');
     fprintf(1,'NX starting with status = %d (%s)\n', status, cmdout);

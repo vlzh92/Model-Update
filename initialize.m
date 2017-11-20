@@ -1,7 +1,13 @@
 function [i_in_file, i_f06_file, ...
     i_freq_rek_file, i_out_file, kof] = ...
-    initialize(path, in_file, f06_file, freq_rek_file, out_file, kof, i)
+    initialize(conf, i)
 
+path = conf.path;
+in_file = conf.in_file;
+f06_file = conf.f06_file;
+freq_rek_file = conf.freq_rek_file;
+out_file = conf.out_file;
+kof = conf.kof;
 %Тело функции инициализации
     i_in_file = [path '\' num2str(i) '\' in_file];
     i_f06_file = [path '\' num2str(i) '\' f06_file];
