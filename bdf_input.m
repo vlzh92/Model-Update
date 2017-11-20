@@ -144,8 +144,8 @@ function res = pbush_property_read (str)
         l = length(str);
     end
     %
-    c = zeros(1,6);
-
+    c = -ones(1,6);
+    
     if contains(str, ',')
 %         fprintf(1, '\npbush_property_read с запятыми\n');
         [~, str] = strtok(str, ',');
@@ -157,9 +157,9 @@ function res = pbush_property_read (str)
            [st, str] = strtok(str, ',');
            % if isempty(st), break; end;
            st = prepare_str_e(st);           
-%            fprintf('\nst=|%s| strlen(st) = %d isfloat(st) = %d\n', st, length(st), isfloat(str2double(st)));
+%            fprintf('\nst=|%s| strlen(st) = %d isnan(str2double(st)) = %d\n', st, length(st), isnan(str2double(st)));
            if(isnan(str2double(st)))
-            c(i) = 0;
+            c(i) = -1;
             continue;
            end
            st = prepare_str_e(st);
@@ -308,7 +308,7 @@ end
 end
 
 function str = prepare_str_e(str)
-    if ~contains(str,'e')
+    if contains(str,'e')
         return;
     end
     c = 0;

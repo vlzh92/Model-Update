@@ -20,14 +20,18 @@ ao = ones(1, length(ar));
 for i = 1:nc
     if sum(i*ao==ar)
         fprintf(1, '|%.2f%', i/nc*100);
-    end;
+    end
     % Для каждого CBUSH записывается отдельное свойство элемента
     str = sprintf('PBUSH,%8d,K,',i+nmax);
     for j =1:6
 %         if c(i,j) == 0
 %             str2 = '';
 %         else
+        if c(i,j) >= 0
             str2 = sprintf('%8.2e,',c(i,j));
+        else
+            str2 = ' ,';
+        end
 %         end;
 %         fprintf('str2 = %s\n', str2);
         % Обработка мантиссы
@@ -35,14 +39,14 @@ for i = 1:nc
             ind = str2(:) == 'e' ;
             ind1 = logical(1 - ind);
             str2 = str2(ind1);
-        end;
+        end
         str = [str str2];
-    end;
+    end
     fprintf(fout,'%s\n',str);
     %
-    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
-%     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
-end;
+%     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+end
 %------------------------------------------------
 fprintf(fout,'\nENDDATA\n');
 fclose(fout);

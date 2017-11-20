@@ -1,7 +1,7 @@
 function start_nastran(out_file)
 %     nastran = '"c:\MSC.Software\MD_Nastran\bin\mdnastranw.exe"';
 %     is_it_start = 'tasklist | findstr /i analysis.exe';
-    p1 = 15; % ожидание результата сразу после запуска
+    p1 = 1; % ожидание результата сразу после запуска
     p2 = 1; % интервал запросов состояния nastran
     nastran = '"D:\Siemens\NX\NXNASTRAN\bin\nastran64Lw.exe"';
     is_it_start = 'tasklist | findstr /i nastran.exe';
@@ -12,7 +12,7 @@ function start_nastran(out_file)
     fprintf(1,'NX starting with status = %d (%s)\n', status, cmdout);
     if status
         exit('Nastran has error\nMATLAB finisinf work\n');
-    end;
+    end
     pause(p1);
     count = 3;
     [status, cmdout] = system(is_it_start);
@@ -21,5 +21,5 @@ function start_nastran(out_file)
         fprintf(1,'%s has been working already %d s (status=%d)\n', cmdout(1:10), p1 + count * p2, status);
         [status, cmdout] = system(is_it_start);
         count = count + 1;    
-    end;
+    end
 end

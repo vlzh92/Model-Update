@@ -7,12 +7,12 @@ nel = length(num); % количество элементов CBUSH
 %
 str = ' ';
 fprintf('Finde NUMBER OF ROOTS FOUND\n');
-while isempty(strfind(str, 'NUMBER OF ROOTS FOUND')) && ~feof(f)
+while ~contains(str, 'NUMBER OF ROOTS FOUND') && ~feof(f)
     str = fgets(f);
-end;
+end
 % exeption(f,  'ERROR! NOT FOUND NUMBER OF ROOTS FOUND!');
 % fprintf(1, '%s', str);
-if isempty(strfind(str, 'NUMBER OF ROOTS FOUND'))
+if ~contains(str, 'NUMBER OF ROOTS FOUND')
     fprintf(2,'WARNING! NOT FOUND NUMBER OF ROOTS FOUND!\n');
     if ~exist('n.temp', 'file')
         n = str2num(input('Enter number of freq: ','s'));
@@ -25,52 +25,52 @@ if isempty(strfind(str, 'NUMBER OF ROOTS FOUND'))
         n = sscanf(fgets(fn),'%d',1);
         fclose(fn);
         fprintf(2,'NUMBER OF ROOTS = %d founded in file n.temp!\n', n);
-    end;
+    end
     
     fseek(f,0,'bof');
 else
     str1 = str(76:end);
     n = sscanf(str1,'%d');      % количество частот
-end;
+end
 
 fprintf('Finde R E A L   E I G E N V A L U E S\n');
 while ~contains(str, 'R E A L   E I G E N V A L U E S') && ~feof(f)
     str = fgets(f);
-end;
+end
 exeption(f,  'ERROR! NOT FOUND R E A L   E I G E N V A L U E S!');
-while isempty(strfind(str, 'NO.       ORDER '))
+while ~contains(str, 'NO.       ORDER ')
     str = fgets(f);
-end;
+end
 exeption(f,  'ERROR! NO.       ORDER!');
 
 freq = zeros(n,1);
 for i = 1:n
     str = fgets(f);
-    if ~isempty(strfind(str, 'NASTRAN'))
+    if contains(str, 'NASTRAN')
         fclose(f);
         fprintf(2,'Not founded freq (%d/%d)\n', i, n);
         return
-    end;
+    end
     str1 = str(40:end);
 %     str1 = str(60:end);
 %     freq(i) = 2*pi*sscanf(str1,'%e',1);  % считывание собственных частот, √ц
     freq(i) = sscanf(str1,'%e',1);  % считывание собственных частот, √ц
 %     fprintf(1, 'freq (%d) = %f Hz\n', i, freq(i));
-end;
+end
 dlmwrite(freq_rek_file, freq, '\n');
 %---------------------------------------------------------------------------
 fprintf('Finde E L E M E N T   S T R A I N   E N E R G I E S\n');
-while isempty(strfind(str, 'E L E M E N T   S T R A I N   E N E R G I E S')) && ~feof(f)
+while ~contains(str, 'E L E M E N T   S T R A I N   E N E R G I E S') && ~feof(f)
     str = fgets(f); % пролистываем до начала распечатки энергий
-end;
+end
 exeption(f, 'ERROR! NOT FOUND E L E M E N T   S T R A I N   E N E R G I E S!');
 %
 fprintf('Finde ELEMENT-TYPE = BUSH\n');
 energy = zeros(n,1);
 energies = zeros(nel,n);
-while isempty(strfind(str, 'ELEMENT-TYPE = BUSH'))
+while ~contains(str, 'ELEMENT-TYPE = BUSH')
      str = fgets(f);
-end;
+end
 while ~feof(f)
     str1 = str(99:end);
     en = sscanf(str1,'%e',1);
@@ -83,12 +83,12 @@ while ~feof(f)
     res = energy_scan(f,num);
     if (~isempty(res))
         energies(res(:,1),i) = res(:,2);
-    end;
+    end
     %
-    while isempty(strfind(str, 'ELEMENT-TYPE = BUSH')) && ~feof(f)
+    while ~contains(str, 'ELEMENT-TYPE = BUSH') && ~feof(f)
         str = fgets(f);
-    end;
-end;
+    end
+end
 %
 fclose(f);
 res = [energy energies']';
@@ -109,7 +109,7 @@ i = 0;
 str = fgets(f);
 % fprintf(1,'%s',str);
 [A, count] = sscanf(str, '%d %e',2);
-while count && isempty(strfind(str,'PAGE'))
+while count && ~contains(str,'PAGE')
     i = i + 1;
     %A = sscanf(str, '%d %e',2);
     n = A(1); en = A(2);
@@ -120,7 +120,7 @@ while count && isempty(strfind(str,'PAGE'))
     %
     str = fgets(f);
     [A, count] = sscanf(str, '%d %e',2);
-end;
+end
 
 res = [ind' energies'];
 end
@@ -136,15 +136,15 @@ function [res, status] = mode_scan_str(f)
         status = -1;
         res = -1;
         return;
-    end;
+    end
     status = 0;
 end
 
 function str = skip_to(f,str_skip)
     str = fgets(f);
-    while isempty(strfind(str, str_skip)) && ~feof(f)
+    while ~contains(str, str_skip) && ~feof(f)
         str = fgets(f);
-    end;
+    end
     exeption(f, [str_skip 'NOT FOUND']);
 end
 
@@ -155,17 +155,17 @@ function [res, count] = mode_scan_block(f)
         count = 0;
         res = -1;
         return;
-    end;
+    end
     count = count + 1;
     while 1
         [temp, status] = mode_scan_str(f);
         if status
             break;
-        end;
+        end
         res(count + 1).node = temp.node;
         res(count + 1).mode = temp.mode;
         count = count + 1;
-    end;
+    end
 end
 
 function res = mode_scan(f)
@@ -180,22 +180,22 @@ function res = mode_scan(f)
         n_mode = sscanf(str, '%d');
         if n_mode ~= n_mode_2
             acc = 0;
-        end;
+        end
         n_mode_2 = n_mode;
         fprintf(1,'%d\n', n_mode);
         if n_mode > 4
             break;
-        end;
+        end
         skip_to(f, 'POINT ID.');
         [temp, count] = mode_scan_block(f);
         for i = 1:count
 %             fprintf(1, '%d %e %e %e %e %e %e\n', temp(i).node, temp(i).mode);
             res(acc + i, n_mode).mode = temp(i).mode;
             res(acc + i, n_mode).node = temp(i).node;
-        end;
+        end
 %         fprintf(1,'\n###########################################################\n');
         acc = acc + count;
-    end;
+    end
 %     acc
 %     size(res)
 
@@ -206,5 +206,5 @@ function exeption(f, str)
         fclose(f);
         fprintf(2, [str '\n']);
         error([str '\n']);
-    end;
+    end
 end

@@ -8,10 +8,10 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
     if f == -1
         error('Can not open file %s\n', f_freq_t);
     end
-    str = ' ';
+%     str = ' ';
     count = 0;
     while ~feof(f)
-        str = fgets(f);
+        fgets(f);
         count = count + 1;
     end
     fseek(f,0,'bof');
@@ -52,7 +52,7 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
         alpha = zeros(higth,width);
         for i = 1:higth
             for j = 1:width
-                if c(i, k) ~= 0
+                if c(i, k) > 0
                     alpha(i,j) = energy(i,j) / freq_reckon(j) / c(i, k);
 %                     fprintf('energy(i=%d,j=%d) = %f freq_reckon(j) = %f c(i, k) = %f alpha(i,j) = %3.5f\n', i, j, energy(i,j), freq_reckon(j), c(i, k), alpha(i,j));
                 else
@@ -77,16 +77,22 @@ function c = update(f_freq_r, f_freq_t, c, energy, kof, changeable)
 %    fprintf('res\n')
 %    pinv(alpha') * (freq_test - freq_reckon) * kof
 %         size(alpha)
-        delta = pinv(alpha)' * (freq_test - freq_reckon) * kof;
-        if changeable && max(delta) ~= 0            
-            kof2 = max(c(1:end,k)) * changeable/ max(abs(delta)) / 100;
-            fprintf('Calculate kof2 = %f\n', kof2);
-            delta = delta * kof2;
-        end
+        delta = pinv(alpha)' * (freq_test - freq_reckon);
+        delta = delta * kof;
+%         if changeable && max(delta) ~= 0            
+%             kof2 = max(c(1:end,k)) * changeable/ max(abs(delta)) / 100;
+%             fprintf('Calculate kof2 = %f\n', kof2);
+%             delta = delta * kof2;
+%         end
         c(1:end,k) = c(1:end,k) + delta;
+        for m = 1:higth
+            if c(m,k) < 0 && c(m,k) ~= -1
+                c(m,k) = 0;
+            end
+        end
         dlmwrite([f_freq_r(1:end-4) '.Delta.txt'], delta,'-append');
     end
-    c(c<100000) = 100000;
+%     c(c<0) = 0;
     dlmwrite([f_freq_r(1:end-4) '.Stiffnes_out.txt'] , c, '\t');
     fprintf(1, 'update\n');
     fprintf(1, '----------END---------\n');

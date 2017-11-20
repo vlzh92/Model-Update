@@ -23,10 +23,10 @@ freq_test_file = 'Freq_test.txt';
 % path = [pwd '\1-Condr'];
 path = [pwd '\1-3D_task'];
 % path = [pwd '\1-attemp'];
-kof = 1; %Масштабный множитель при уточнении
+kof = 0.1; %Масштабный множитель при уточнении
 changeable = 0; %Максимально-допустимое изменение жесткости за одну итерацию в процентах
-START = 1;
-STEP = 1000;
+START = 30;
+STEP = 100;
 %########################################################################
 delete([pwd '\kof.temp']);
 delete([pwd '\n.temp']);
@@ -49,7 +49,7 @@ for i=START:STEP
     % форме.
     if i>1
         plot_freq(freq_test_file, i_freq_rek_file, i);
-    end;
+    end
     
     % Изменение свойст материалов
     c = update(i_freq_rek_file, 'Freq_test.txt', c, res(2:end,1:end), kof, changeable);
