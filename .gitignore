@@ -69,6 +69,7 @@ Temporary Items
 
 .gitignore
 
+*.lis
 *.txt
 *.asv
 *.temp

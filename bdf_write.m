@@ -44,8 +44,8 @@ for i = 1:nc
     end
     fprintf(fout,'%s\n',str);
     %
-%     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
-    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+%     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
 end
 %------------------------------------------------
 fprintf(fout,'\nENDDATA\n');
