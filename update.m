@@ -1,4 +1,4 @@
-function c = update(f_freq_r, f_freq_t, c, energy, conf)
+function c = update(f_freq_r, f_freq_t, c, energy, conf, c_start)
     fprintf(1, '---------START--------\n');
     fprintf(1, 'update\n');
     
@@ -85,8 +85,17 @@ function c = update(f_freq_r, f_freq_t, c, energy, conf)
 %             fprintf('Calculate kof2 = %f\n', kof2);
 %             delta = delta * kof2;
 %         end
+        for m = 1:higth
+            if delta >= c_start(m,k)* conf.ch
+                delta = c_start(m,k)* conf.ch;
+            end
+        end
+        
         c(1:end,k) = c(1:end,k) + delta;
         for m = 1:higth
+            if c(m,k) < c_start(m,k)* conf.g_ch
+                c(m,k) = c_start(m,k)* conf.g_ch;
+            end
             if c(m,k) < 0 && c(m,k) ~= -1
                 c(m,k) = 0;
             end
