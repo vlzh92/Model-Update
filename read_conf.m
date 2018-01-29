@@ -95,5 +95,47 @@ function conf = read_conf(conf, conf_name)
         end
     end
     
-    fclose(f);    
+    fclose(f);
+    print_struct(conf);
+end
+
+function print_struct(conf)
+fprintf(1,'#####################################################\n');
+fprintf(1, '1) Имя файла модели, которая будет уточнена\n');
+fprintf(1, 'in_file = %s\n', conf.in_file );
+fprintf(1, '2) Имя файла с результатами расчета\n');
+fprintf(1, 'f06_file = %s\n', conf.f06_file );
+fprintf(1, '3) Имя файла с изменёнными жесткостями\n');
+fprintf(1, 'out_file = %s\n', conf.out_file );
+fprintf(1, '4) Имя файла с расчетными частотами\n');
+fprintf(1, 'freq_rek_file = %s\n', conf.freq_rek_file );
+fprintf(1, '5) Имя файла с тестовыми частотами\n');
+fprintf(1, 'freq_test_file = %s\n', conf.freq_test_file );
+fprintf(1, '6) Путь к папке в которой будут хранится рпезультаты уточнения\n');
+fprintf(1, 'path = %s\n', conf.path );
+fprintf(1, '7) масштабный множитель (исопльзуется дли изменения скорости сходимости). Может быть изменен по ходу уточнения \n');
+fprintf(1, 'kof = %f\n', conf.kof );
+fprintf(1, '8) максиамльное изменение в % жесткости на любой итерации\n');
+fprintf(1, 'ch = %f\n', conf.ch );
+fprintf(1, '9) global changeable максиамльное изменение жесткости в % от первоначального значения (на первой итерации)\n');
+fprintf(1, 'g_ch = %f\n', conf.g_ch );
+fprintf(1, '10) Начинать с итерации номер 1\n');
+fprintf(1, 'START = %d\n', conf.START);
+fprintf(1, '11) Выполнять итерации до 100\n');
+fprintf(1, 'STEP = %d\n', conf.STEP);
+fprintf(1, '12) Включен режим отладки\n');
+fprintf(1, 'DEBUG = %d\n', conf.DEBUG);
+fprintf(1, '13) Включено ведение log-файла\n');
+fprintf(1, 'LOG = %d\n', conf.LOG);
+fprintf(1, '14)  ожидание результата сразу после запуска в секундах\n');
+fprintf(1, 'p1 = %d\n', conf.p1);
+fprintf(1, '15)  интервал запросов состояния nastran в секундах\n');
+fprintf(1, 'p2 = %d\n', conf.p2);
+fprintf(1, '16) Путь до решателя \n');
+fprintf(1, 'nastran = %s\n', conf.nastran );
+fprintf(1, '17)  Имя решателя в консоли после запуска\n');
+fprintf(1, 'is_it_start = %s\n', conf.is_it_start );
+fprintf(1, '18) Параметры решателя\n');
+fprintf(1, 'nas_param = %s\n', conf.nas_param );
+fprintf(1,'#####################################################\n');
 end

@@ -43,15 +43,15 @@ function c = update(f_freq_r, f_freq_t, c, energy, conf, c_start)
 %     rest = energy';
     % fprintf(1, 'length(resT(:,1)) = %d\n', length(rest(:,1)));
     width = length(freq_reckon);
-    higth = length(energy(:,1));
-%     fprintf(1,'width = %d\nhigth = %d\n', width, higth);
+    height = length(energy(:,1));
+%     fprintf(1,'width = %d\nheight = %d\n', width, height);
     % size(alpha)
 %     size(c)
 %     energy
     dlmwrite([f_freq_r(1:end-4) '.Stiffnes_in.txt'] , c, '\t');
     for k=1:6
-        alpha = zeros(higth,width);
-        for i = 1:higth
+        alpha = zeros(height,width);
+        for i = 1:height
             for j = 1:width
                 if c(i, k) > 0
                     alpha(i,j) = energy(i,j) / freq_reckon(j) / c(i, k);
@@ -78,24 +78,33 @@ function c = update(f_freq_r, f_freq_t, c, energy, conf, c_start)
 %    fprintf('res\n')
 %    pinv(alpha') * (freq_test - freq_reckon) * kof
 %         size(alpha)
+%         digits(20);
+%         for i=1:length(delta)
+%             delta(i) = vpa(delta(i));
+%         end;
+%         delta = vpa(delta);
+%         alpha = vpa(alpha);
         delta = pinv(alpha)' * (freq_test - freq_reckon);
-        delta = delta * kof;
+%         delta = lsqminnorm(alpha, freq_test - freq_reckon);
+        delta = delta * kof
 %         if changeable && max(delta) ~= 0            
 %             kof2 = max(c(1:end,k)) * changeable/ max(abs(delta)) / 100;
 %             fprintf('Calculate kof2 = %f\n', kof2);
 %             delta = delta * kof2;
 %         end
-        for m = 1:higth
-            if delta >= c_start(m,k)* conf.ch
-                delta = c_start(m,k)* conf.ch;
+        for m = 1:height
+            if abs(delta(m)) >= c(m,k)* conf.ch
+                delta(m) = c(m,k) * conf.ch * sign(delta(m));
             end
         end
-        
         c(1:end,k) = c(1:end,k) + delta;
-        for m = 1:higth
-            if c(m,k) < c_start(m,k)* conf.g_ch
-                c(m,k) = c_start(m,k)* conf.g_ch;
+        for m = 1:height
+            if c(m,k) > c_start(m,k)* conf.g_ch
+                c(m,k) = c_start(m,k)* conf.g_ch
             end
+%             if c(m,k) < c_start(m,k) * (conf.g_ch - 1)
+%                 c(m,k) = c_start(m,k)* (conf.g_ch - 1);
+%             end
             if c(m,k) < 0 && c(m,k) ~= -1
                 c(m,k) = 0;
             end

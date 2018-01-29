@@ -3,9 +3,9 @@
 % f06_file = 'full_cub.f06';
 % out_file = 'full_cub.dat';
 % % % % % % % % % % % % % % % % % 
-in_file = 'Condor.bdf';
-f06_file = 'condor.f06';
-out_file = 'Condor.bdf';
+in_file = 'sim.dat';
+f06_file = 'sim.f06';
+out_file = 'sim.dat';
 % % % % % % % % % % % % % % % % % 
 % in_file = '1degre.dat';
 % f06_file = '1degre.f06';
@@ -18,11 +18,12 @@ out_file = 'Condor.bdf';
 freq_rek_file = 'Freq_reckon.txt';
 freq_test_file = 'Freq_test.txt';
 % path = [pwd '\5-attemp'];
-path = [pwd '\1-attemp'];
+path = [pwd '\5D-sprin'];
 % path = [pwd '\1-attemp'];
-kof = 100; %Масштабный множитель при уточнении
-START = 2500;
-STEP = 20000;
+kof = 0; %Масштабный множитель при уточнении
+START = 1;
+STEP = 10;
+i = 10
 %########################################################################
     [i_in_file, i_f06_file, i_freq_rek_file, i_out_file, kof] = ...
     initialize(path, in_file, f06_file, freq_rek_file, out_file, kof, i);

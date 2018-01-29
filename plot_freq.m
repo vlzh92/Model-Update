@@ -8,10 +8,11 @@ function plot_freq(path_test, path, num_iter)
     close all
     figure
     for i=1:num_freq
-        a=[freq_t(i) freq(i,:)];
-        s(i)=subplot(num_freq, 1, i);
-        plot(1:num_iter, ones(num_iter)*freq_t(i), '--r', 1:num_iter, freq(i,:),'b', 'LineWidth',2);
-        axis([1 num_iter min(a)*0.98 max(a)*1.02]);
+%         a=[freq_t(i) freq(i,:)]
+        bbb = - ones(1,num_iter) * freq_t(i) + freq(i,:);
+        s(i) = subplot(num_freq, 1, i);
+        plot(1:num_iter, ones(num_iter) * 0, '--r', 1:num_iter,bbb,'b', 'LineWidth',2);
+%         axis([1 num_iter min(a)*0.98 max(a)*1.02]);
         grid on;
         title(datestr(now,'yy-mmmm-dd_HH-MM-SS'));
         xlabel('Iteration','FontSize', 8);
