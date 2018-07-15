@@ -1,9 +1,13 @@
-function res = f06_read(name, num, freq_rek_file, conf)
+function res = f06_read(name, num, freq_rek_file, conf, i_in_file)
 fprintf('---------START---------\n');
 fprintf('f06_read\n');
 % Функция считывания f06
-f = fopen(name,'r');
 nel = length(num); % количество элементов CBUSH
+f = fopen(name,'r');
+if f == -1
+    start_nastran(i_in_file, conf);
+    f = fopen(name,'r');
+end
 %
 str = ' ';
 fprintf('Finde NUMBER OF ROOTS FOUND\n');
