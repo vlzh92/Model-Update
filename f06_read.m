@@ -1,4 +1,4 @@
-function res = f06_read(name, num, freq_rek_file)
+function res = f06_read(name, num, freq_rek_file, conf)
 fprintf('---------START---------\n');
 fprintf('f06_read\n');
 % Функция считывания f06
@@ -57,7 +57,9 @@ for i = 1:n
     freq(i) = sscanf(str1,'%e',1);  % считывание собственных частот, Гц
 %     fprintf(1, 'freq (%d) = %f Hz\n', i, freq(i));
 end
-dlmwrite(freq_rek_file, freq, '\n');
+if conf.LOG > 0
+    dlmwrite(freq_rek_file, freq, '\n');
+end
 %---------------------------------------------------------------------------
 fprintf('Finde E L E M E N T   S T R A I N   E N E R G I E S\n');
 while ~contains(str, 'E L E M E N T   S T R A I N   E N E R G I E S') && ~feof(f)
@@ -92,7 +94,9 @@ end
 %
 fclose(f);
 res = [energy energies']';
-dlmwrite([freq_rek_file(1:end-4) '.Energy.txt'],res,'\t');
+if conf.LOG > 1
+    dlmwrite([freq_rek_file(1:end-4) '.Energy.txt'],res,'\t');
+end
 fprintf('f06_read\n');
 fprintf('--------- END ---------\n');
 end

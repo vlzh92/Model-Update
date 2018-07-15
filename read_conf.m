@@ -49,16 +49,28 @@ function conf = read_conf(conf, conf_name)
             conf.path = value;
             continue;
         end
+        if contains(par,'freq_scale')
+            conf.freq_scale = str2num(value);
+            continue;
+        end
         if contains(par,'kof')
             conf.kof = str2double(value);
             continue;
         end
-        if contains(par,'ch')
-            conf.ch = str2double(value);
+        if contains(par,'ch_up')
+            conf.ch_up = str2double(value);
             continue;
         end
-        if contains(par,'g_ch')
-            conf.g_ch = str2double(value);
+        if contains(par,'ch_down')
+            conf.ch_down = str2double(value);
+            continue;
+        end
+        if contains(par,'g_ch_max')
+            conf.g_ch_max = str2double(value);
+            continue;
+        end
+        if contains(par,'g_ch_min')
+            conf.g_ch_min = str2double(value);
             continue;
         end
         if contains(par,'START')
@@ -115,10 +127,12 @@ fprintf(1, '6) ѕуть к папке в которой будут хранитс€ рпезультаты уточнени€\n');
 fprintf(1, 'path = %s\n', conf.path );
 fprintf(1, '7) масштабный множитель (исопльзуетс€ дли изменени€ скорости сходимости). ћожет быть изменен по ходу уточнени€ \n');
 fprintf(1, 'kof = %f\n', conf.kof );
-fprintf(1, '8) максиамльное изменение в % жесткости на любой итерации\n');
-fprintf(1, 'ch = %f\n', conf.ch );
-fprintf(1, '9) global changeable максиамльное изменение жесткости в % от первоначального значени€ (на первой итерации)\n');
-fprintf(1, 'g_ch = %f\n', conf.g_ch );
+fprintf(1, '8) максиамльное/минимальное изменение в %% жесткости на любой итерации\n');
+fprintf(1, 'ch_up = %f\n', conf.ch_up );
+fprintf(1, 'ch_down = %f\n', conf.ch_down );
+fprintf(1, '9) global changeable максиамльное/минимальное изменение жесткости в %% от первоначального значени€ (на первой итерации)\n');
+fprintf(1, 'g_ch_max = %f\n', conf.g_ch_max);
+fprintf(1, 'g_ch_min = %f\n', conf.g_ch_min);
 fprintf(1, '10) Ќачинать с итерации номер 1\n');
 fprintf(1, 'START = %d\n', conf.START);
 fprintf(1, '11) ¬ыполн€ть итерации до 100\n');
@@ -137,5 +151,13 @@ fprintf(1, '17)  »м€ решател€ в консоли после запуска\n');
 fprintf(1, 'is_it_start = %s\n', conf.is_it_start );
 fprintf(1, '18) ѕараметры решател€\n');
 fprintf(1, 'nas_param = %s\n', conf.nas_param );
+fprintf(1, '19)  оэффициент значимости частот\n');
+fprintf(1, 'freq_scale = %s\n', conf.freq_scale );
 fprintf(1,'#####################################################\n');
 end
+
+% function bres = contains(str1,str2)
+% 
+%     bres = size( strfind(str1,str2) );
+% 
+% end

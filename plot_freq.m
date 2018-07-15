@@ -1,4 +1,4 @@
-function plot_freq(path_test, path, num_iter)
+function plot_freq(path_test, path, num_iter, conf)
 %####################################################
 %Графики сходимости функций частот
     num_freq = number_freq(path_test);
@@ -60,6 +60,7 @@ function freq = read_all_freq(path, num_freq, num_iter)
 end
 
 function nf = number_freq(path)
+    path
     f = fopen(path);
     nf = 0;
     while ~feof(f)

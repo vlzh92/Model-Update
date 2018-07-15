@@ -1,36 +1,37 @@
 %######################################################################## 
-% in_file = 'full_cub.dat';
-% f06_file = 'full_cub.f06';
-% out_file = 'full_cub.dat';
-% % % % % % % % % % % % % % % % % 
-in_file = 'sim.dat';
-f06_file = 'sim.f06';
-out_file = 'sim.dat';
-% % % % % % % % % % % % % % % % % 
-% in_file = '1degre.dat';
-% f06_file = '1degre.f06';
-% out_file = '1degre.dat';
-% % % % % % % % % % % % % % % % % 
-% in_file = '2deg_s-2deg.dat';
-% f06_file = '2deg_s-2deg.f06';
-% out_file = '2deg_s-2deg.dat';
-% % % % % % % % % % % % % % % % % 
-freq_rek_file = 'Freq_reckon.txt';
-freq_test_file = 'Freq_test.txt';
-% path = [pwd '\5-attemp'];
-path = [pwd '\5D-sprin'];
-% path = [pwd '\1-attemp'];
-kof = 0; %Масштабный множитель при уточнении
-START = 1;
-STEP = 10;
-i = 10
+conf_folder = '0CONF';
+path = [pwd '\trkv7'];
+conf = struct(...
+    'in_file','maket.bdf',... %Имя файла модели, которая будет уточнена
+    'f06_file', 'maket.f06',... %Имя файла с результатами расчета
+    'out_file', 'maket.bdf',... %Имя файла с изменёнными жесткостями
+    'freq_rek_file', 'Freq_reckon.txt',... %Имя файла с расчетными частотами
+    'freq_test_file',  [pwd '\' conf_folder '\trkv_freq.txt'],... %Имя файла с тестовыми частотами
+    'path', [pwd '\trkv7'],... %Путь к папке в которой будут хранится рпезультаты уточнения
+    'kof', 1 ,... %масштабный множитель (исопльзуется дли изменения скорости сходимости). Может быть изменен по ходу уточнения в файле kof.temp
+    'ch_up', 0.5,...  %максиамльное изменение в % жесткости на любой итерации
+    'ch_down', 0.5,...  %максиамльное изменение в % жесткости на любой итерации
+    'g_ch_max', 1.7,... %global changeable максиамльное изменение жесткости в % от первоначального значения (на первой итерации)
+    'g_ch_min', 0.5,... %global changeable максиамльное изменение жесткости в % от первоначального значения (на первой итерации)
+    'START', 1,... %Начинать с итерации номер 1
+    'STEP', 50,... %Выполнять итерации до 100
+    'DEBUG', 5, ... %Включен режим отладки
+    'LOG', 4, ... %Включено ведение log-файла
+    'p1', 1, ... % ожидание результата сразу после запуска в секундах
+    'p2', 1, ...  % интервал запросов состояния nastran в секундах
+    'nastran', '"D:\Siemens\NX\NXNASTRAN\bin\nastran64Lw.exe"', ... %Путь до решателя 
+    'is_it_start', 'tasklist | findstr /i nastran.exe', ... % Имя решателя в консоли после запуска
+    'nas_param', 'parallel=4 scratch=yes'... %Параметры решателя
+);
+i = 20;
+% conf.STEP;
 %########################################################################
     [i_in_file, i_f06_file, i_freq_rek_file, i_out_file, kof] = ...
-    initialize(path, in_file, f06_file, freq_rek_file, out_file, kof, i);
+    initialize(conf, i);
     % Чтение заданного bdf
     % Первая строка - суммарные энергии деформации для соответствующих
     % собственных форм, остальные - поэлементно, каждый столбец соответствует собственной
     % форме.
     if i>1
-        plot_freq(freq_test_file, i_freq_rek_file, i);
+        plot_freq(conf.freq_test_file, i_freq_rek_file, i, conf);
     end;

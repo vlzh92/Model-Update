@@ -1,4 +1,4 @@
-function bdf_write(name, num, c, nmax)
+function bdf_write(name, num, c, nmax, conf)
 fprintf('---------START---------\n');
 fprintf('bdf_write\n');
 % Функция записи bdf
@@ -27,10 +27,13 @@ for i = 1:nc
 %         if c(i,j) == 0
 %             str2 = '';
 %         else
+        if conf.LOG > 3
+            fprintf(1, 'i = %d; j = %d; %f\n', i, j, c(i,j));
+        end
         if c(i,j) >= 0
             str2 = sprintf('%8.2e,',c(i,j));
         else
-            str2 = ' ,';
+            str2 = ',';
         end
 %         end;
 %         fprintf('str2 = %s\n', str2);
@@ -44,8 +47,16 @@ for i = 1:nc
     end
     fprintf(fout,'%s\n',str);
     %
+    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,%d,\n',num(i,1),i+nmax,num(i,2),num(i,3),num(i,4));
+    if conf.DEBUG > 3
+        fprintf(1,'bdf_write: %s\n',str);
+        fprintf(1,'CBUSH,%d,%d,%d,%d,,,,%d,\n',num(i,1),i+nmax,num(i,2),num(i,3),num(i,4));
+    end
+%     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+% fprintf(fout,'CBUSH,%d,%d,%d,%d,1.000000,0.0000,0.0000,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+%   fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,1,\n',num(i,1),i+nmax,num(i,2),num(i,3));
 %     fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,0,\n',num(i,1),i+nmax,num(i,2),num(i,3));
-    fprintf(fout,'CBUSH,%d,%d,%d,%d,,,,,\n',num(i,1),i+nmax,num(i,2),num(i,3));
+
 end
 %------------------------------------------------
 fprintf(fout,'\nENDDATA\n');

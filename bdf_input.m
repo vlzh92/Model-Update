@@ -1,9 +1,14 @@
-function res = bdf_input (name)
+function res = bdf_input (name, conf)
 fprintf('---------START---------\n');
 fprintf('bdf_input\n');
 
 fin = fopen(name,'r');
 % ѕодсчЄт количества записей PBUSH и CBUSH
+if fin < 0 
+   fprintf(2, 'Cant open %s\n', name);
+   return;
+end
+
 n_c = 0;  % CBUSH
 n_p = 0;  % PBUSH
 nmax = 0; % наибольший идентификационный номер свойства элемента во всей модели (не только PBUSH)
@@ -50,7 +55,7 @@ fprintf('CBUSH = %d PBUSH = %d\n', n_c, n_p);
 % n_c = n_c + 5;
 pbush_num = zeros(n_p,1); % массив идентификационных номеров свойств PBUSH
 pbush_c   = zeros(n_p,6); % массив жесткостей PBUSH
-cbush_num = zeros(n_c,4); % массив номеров CBUSH, включа€ собственный номер, ссылку на PBUSH, номера 2 узлов
+cbush_num = zeros(n_c,5); % массив номеров CBUSH, включа€ собственный номер, ссылку на PBUSH, номера 2 узлов
 cbush_c   = zeros(n_c,6); % массив жесткостей CBUSH
 %
 fseek (fin, 0, 'bof');  % переход в начало файла
@@ -70,7 +75,7 @@ while ~feof(fin)
     if contains(str, 'PBUSH') && ~contains(str, '$*')
 %         fprintf(1,'\nPBUSH: %s',str);
         ip = ip+1;
-        res = pbush_property_read(str);     % считывание записи PBUSH
+        res = pbush_property_read(str, conf);     % считывание записи PBUSH
         pbush_num(ip) = res(1);
 %         fprintf(1, '%d) %f %f %f %f %f %f', ip, res(2:7));
         pbush_c(ip,:) = res(2:7);
@@ -78,7 +83,7 @@ while ~feof(fin)
         if contains(str, 'CBUSH') && ~contains(str, '$*')
 %             fprintf(1,'CBUSH: %s',str);
             ic = ic+1;
-            [cbush_num(ic,:)] = cbush_property_read(str);   % считывание записи CBUSH
+            [cbush_num(ic,:)] = cbush_property_read(str, conf);   % считывание записи CBUSH
         else
            if ~contains(str, 'ENDDATA')
                fprintf(fout,'%s',str);
@@ -102,7 +107,7 @@ for i = 1:n_c
     cbush_c(i,:) = pbush_c(ind,:);
 end
 %
-res = struct('nmax', nmax, 'num',cbush_num(:, [ 1 3 4]), 'c', cbush_c);
+res = struct('nmax', nmax, 'num',cbush_num(:, [ 1 3 4 5]), 'c', cbush_c);
 
 fprintf('\nbdf_input\n');
 fprintf('--------- END ---------\n');
@@ -110,8 +115,11 @@ end
 
 % =========================================================
 
-function num = cbush_property_read (str)
+function num = cbush_property_read (str, conf)
 % ‘ункци€ считывани€ записи CBUSH
+    if conf.DEBUG > 4
+        fprintf(1,'cbush_property_read: %s\n',str);
+    end
     if contains(str, ',')
 %         fprintf(1, '\ncbush_property_read с зап€тыми\n');
         [~, str] = strtok(str, ',');
@@ -121,22 +129,32 @@ function num = cbush_property_read (str)
         n2 = sscanf(st,'%d');
         [st, str] = strtok(str, ',');
         n3 = sscanf(st,'%d');
-        [st, ~] = strtok(str, ',');
+        [st, str] = strtok(str, ',');
         n4 = sscanf(st,'%d');
+        [st, ~] = strtok(str, ',');
+%         [st, ~] = strtok(str, ',');
+        n5 = sscanf(st,'%d');
     else
 %         fprintf(1, '\cbush_property_read без зап€тых\n');
         n1 = sscanf(str(9:16) ,'%d');
         n2 = sscanf(str(17:24),'%d');
         n3 = sscanf(str(25:32),'%d');
         n4 = sscanf(str(33:40),'%d');
+        n5 = sscanf(str(41:end),'%d');
     end
-    num = [n1 n2 n3 n4];    
+    if conf.DEBUG > 4
+        fprintf(1, 'cbush_property_read: n1=%d n2=%d n3=%d n4=%d n5=%d\n', n1, n2, n3, n4, n5);
+    end
+    num = [n1 n2 n3 n4 n5];    
 end
 
 % =========================================================
 
-function res = pbush_property_read (str)
+function res = pbush_property_read (str, conf)
 % ‘ункци€ считывани€ записи PBUSH
+    if conf.DEBUG > 4
+        fprintf(1,'pbush_property_read: %s\n',str);
+    end
     l = length(str);
     while l<72 
         %str = strcat(str,char(ones(1,73-l)*49));
@@ -148,24 +166,50 @@ function res = pbush_property_read (str)
     
     if contains(str, ',')
 %         fprintf(1, '\npbush_property_read с зап€тыми\n');
-        [~, str] = strtok(str, ',');
-        [st, str] = strtok(str, ',');
-        n = sscanf(st,'%d');
-        [~, str] = strtok(str, ',');
+%         temp = split(str,',');
+%         if conf.DEBUG > 4
+%            temp
+%         end
+%        n = sscanf(temp{2},'%d');
+        n = sscanf(split(str,',',1),'%d');        
         for i = 1:6
-%            fprintf('\n------------------------\n');
-           [st, str] = strtok(str, ',');
-           % if isempty(st), break; end;
-           st = prepare_str_e(st);           
-%            fprintf('\nst=|%s| strlen(st) = %d isnan(str2double(st)) = %d\n', st, length(st), isnan(str2double(st)));
-           if(isnan(str2double(st)))
-            c(i) = -1;
-            continue;
-           end
-           st = prepare_str_e(st);
-           c(i) = sscanf(st, '%e');
-%            fprintf(1, 'c(%d) = %e\n', i, c(i));
+%            st = prepare_str_e(temp{3+i});
+            st = prepare_str_e(split(str,',',2+i));
+            if(isnan(str2double(st)))
+                c(i) = -1;
+                if conf.DEBUG > 4
+                    fprintf(1,'pbush_property_read 1: c(%d) = %e\n', i, c(i));
+                end
+                continue;
+            end
+            c(i) = sscanf(st, '%e');
+            if conf.DEBUG > 4
+                fprintf(1,'pbush_property_read 1: c(%d) = %e\n', i, c(i));
+            end
         end
+
+%         [~, str] = strtok(str, ',');
+%         [st, str] = strtok(str, ',');
+%         n = sscanf(st,'%d');
+%         [~, str] = strtok(str, ',');
+%         for i = 1:6
+%            fprintf('\n------------------------\n');
+%           split
+%            [st, str] = strtok(st, ',');
+%            % if isempty(st), break; end;
+%            st = prepare_str_e(st);           
+% %            fprintf('\nst=|%s| strlen(st) = %d isnan(str2double(st)) = %d\n', st, length(st), isnan(str2double(st)));
+%            if(isnan(str2double(st)))
+%             c(i) = -1;
+%             continue;
+%            end
+%            st = prepare_str_e(st);
+%            c(i) = sscanf(st, '%e');
+%            if conf.DEBUG > 4
+%                 fprintf(1,'pbush_property_read 1: c(%d) = %e\n', i, c(i));
+%            end
+% %            fprintf(1, 'c(%d) = %e\n', i, c(i));
+%         end
     else
 %         fprintf(1, '\npbush_property_read без зап€тых\n');
         n = sscanf(str(9:16),'%d');
@@ -199,11 +243,21 @@ function res = pbush_property_read (str)
             end
             if ~isempty(deblank(str2))
                 str2 = prepare_str_e(str2);
-                c(i) = sscanf(str2,'%e');
+                temp = sscanf(str2,'%e');
+                if(isnan(temp))
+                    c(i) = -1;
+                else
+                    c(i) = temp;
+                end
+                if conf.DEBUG > 4
+                    fprintf(1,'pbush_property_read 2: c(%d) = %e\n', i, c(i));
+                end               
             end
         end
     end
-
+    if conf.DEBUG > 4
+        fprintf(1,'pbush_property_read: END\n');
+    end
     res = [n c];
 end
 
