@@ -53,6 +53,10 @@ function conf = read_conf(conf, conf_name)
             conf.freq_scale = str2num(value);
             continue;
         end
+        if contains(par,'split_spring')
+            conf.split_spring = str2num(value);
+            continue;
+        end
         if contains(par,'kof')
             conf.kof = str2double(value);
             continue;
@@ -152,7 +156,7 @@ fprintf(1, 'is_it_start = %s\n', conf.is_it_start );
 fprintf(1, '18) Параметры решателя\n');
 fprintf(1, 'nas_param = %s\n', conf.nas_param );
 fprintf(1, '19) Коэффициент значимости частот\n');
-fprintf(1, 'freq_scale = %s\n', conf.freq_scale );
+fprintf(1, 'freq_scale = %d\n', conf.freq_scale );
 fprintf(1,'#####################################################\n');
 end
 

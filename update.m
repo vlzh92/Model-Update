@@ -173,10 +173,9 @@ function [bool] = check_stiffnes(c, conf)
                 bool = 1;
                 return 
             end
-        if conf.DEBUG > 4
-            fprintf(1, 'c(%d, %d) = %f n = %d\n', i, j, c(i,j), n);
-        end
-        
+            if conf.DEBUG > 4
+                fprintf(1, 'c(%d, %d) = %f n = %d\n', i, j, c(i,j), n);
+            end        
         end
     end
     bool = 0;

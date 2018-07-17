@@ -26,6 +26,7 @@ conf = struct(...
     'DEBUG', 5, ... %Включен режим отладки
     'LOG', 4, ... %Включено ведение log-файла
     'freq_scale',[1,1,1],...%Значимость частот
+    'split_spring',1,...%Флаг - разбивки пружинки с 6 жесткостями на 6 отдельных пружин
     'p1', 1, ... % ожидание результата сразу после запуска в секундах
     'p2', 1, ...  % интервал запросов состояния nastran в секундах
     'nastran', '"D:\Siemens\NX\NXNASTRAN\bin\nastran64Lw.exe"', ... %Путь до решателя 
@@ -52,8 +53,22 @@ for i = conf.START:conf.STEP
     initialize(conf, i);
     % Чтение заданного bdf
     res = bdf_input(i_in_file, conf);
+    nel = length(res.num(:, 1)); % количество элементов CBUSH
+    if i == conf.START && conf.split_spring > 0
+         res = check_stiffnes(res, conf);
+         if nel ~= length(res.num(:, 1))
+            i_out_file_temp = [conf.path '\1\' conf.in_file]
+            i_f06_file_temp = [conf.path '\1\' conf.f06_file]
+            copyfile(i_out_file_temp, [i_out_file_temp '-COPY']);
+            if exist(i_f06_file_temp,'file')
+                copyfile(i_f06_file_temp, [i_f06_file_temp '-COPY']);
+            end
+            bdf_write(i_out_file_temp, res.num, res.c, res.nmax, conf);
+            start_nastran(i_out_file_temp, conf);
+         end
+    end
     num = res.num; % 1й столбец - номера элементов cbush, 2й и 3й - номера входящих в них узлов
-    c = res.c;  % массив считанных жесткостей cbush
+    c = res.c;  % массив считанных жесткостей cbush    
     nmax = res.nmax;
     nel = length(num(:, 1)); % количество элементов CBUSH
     % Дополнительно генерируется файл tamplate.bdf, нужен дальше
